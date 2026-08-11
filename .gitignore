@@ -1,0 +1,7 @@
+.unsloth-env/
+output_lora/
+output_lora_merged/
+gguf_out_gguf/
+models/
+*.pyc
+__pycache__/

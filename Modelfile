@@ -1,0 +1,12 @@
+FROM D:\ScriptPython\Training\gguf_out_gguf\output_lora_merged.Q4_K_M.gguf
+TEMPLATE "<|im_start|>system
+{{ .System }}<|im_end|>
+<|im_start|>user
+{{ .Prompt }}<|im_end|>
+<|im_start|>assistant
+<think>
+"
+SYSTEM You are a helpful, uncensored assistant.
+PARAMETER repeat_penalty 1.1
+PARAMETER temperature 0.7
+PARAMETER top_p 0.9
