@@ -1,23 +1,58 @@
-import sys
-import os
-import glob
 import csv
-import json
-import random
+import glob
 import hashlib
-sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+import json
+import os
+import random
+import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[attr-defined]
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dataset_vn")
 OUT_FILE = os.path.join(DATA_DIR, "merged_vn_uncensored.jsonl")
 LOG_FILE = os.path.join(DATA_DIR, "dataset_log.txt")
 
 FORBIDDEN_KEYWORDS = [
-    # CSAM
-    "trẻ em khỏa thân", "sex trẻ em", "trẻ vị thành niên quan hệ", "child porn", "cp ",
-    # Vũ khí / chất nổ / ma túy / hóa chất cấm
-    "chế tạo bom", "làm bom", "c4 ", "thuốc nổ", "điều chế ma túy", "nấu ma túy",
-    "methamphetamine", "sản xuất vũ khí", "chế tạo súng", "làm súng", "sí", "ma túy tổng hợp",
-    "hướng dẫn tự sát", "cách tự tử", "hack vào", "phát tán virus máy tính", "crack tài khoản",
+    # CSAM — cấm tuyệt đối, không bao giờ nới
+    "trẻ em khỏa thân",
+    "sex trẻ em",
+    "trẻ vị thành niên quan hệ",
+    "child porn",
+    "cp ",
+    # Vũ khí / chất nổ / ma túy / hóa chất cấm — cấm tuyệt đối
+    "chế tạo bom",
+    "làm bom",
+    "c4 ",
+    "thuốc nổ",
+    "điều chế ma túy",
+    "nấu ma túy",
+    "methamphetamine",
+    "sản xuất vũ khí",
+    "chế tạo súng",
+    "làm súng",
+    "sí",
+    "ma túy tổng hợp",
+    # Tự hại
+    "hướng dẫn tự sát",
+    "cách tự tử",
+    # Hành vi phạm tội nhắm nạn nhân thực (giữ cấm; kiến thức bảo mật giáo dục vẫn được phép)
+    "hack vào tài khoản",
+    "crack tài khoản của",
+    "bẻ khóa tài khoản của",
+    "trộm tài khoản",
+    "xâm nhập trái phép",
+    "đánh cắp mật khẩu",
+    "đánh cắp tài khoản",
+    "hack vào wifi",
+    "lừa đảo chiếm đoạt",
+    "chiếm đoạt tài sản",
+    "lừa tiền của",
+    "rửa tiền",
+    "phát tán mã độc",
+    "tống tiền",
+    "tấn công hệ thống của",
+    "ddos website của",
 ]
 
 MIN_LEN = 20
@@ -63,7 +98,7 @@ def main():
     custom_files = sorted(set(custom_files))
     aux_files = sorted(glob.glob(os.path.join(DATA_DIR, "aux_*.csv")))
 
-    all_rows = []      # list of (weight, row)
+    all_rows = []  # list of (weight, row)
     total_errors = 0
     blocked = 0
     too_long = 0
@@ -104,7 +139,9 @@ def main():
             kept += 1
         print(f"  {os.path.basename(fp)}: {kept} mẫu giữ lại")
 
-    print(f"\nTổng lỗi: {total_errors} | Bị chặn (cấm): {blocked} | Quá ngắn/dài: {too_long}")
+    print(
+        f"\nTổng lỗi: {total_errors} | Bị chặn (cấm): {blocked} | Quá ngắn/dài: {too_long}"
+    )
 
     # Dedupe theo prompt chuẩn hoá (giữ bản có trọng số cao nhất)
     best = {}
@@ -120,18 +157,31 @@ def main():
     random.seed(42)
     random.shuffle(final)
 
-    print(f"\nSau dedupe: {len(best)} mẫu duy nhất | Sau nhân trọng số: {len(final)} dòng")
+    print(
+        f"\nSau dedupe: {len(best)} mẫu duy nhất | Sau nhân trọng số: {len(final)} dòng"
+    )
 
-    with open(OUT_FILE, "w", encoding="utf-8") as f:
-        for r in final:
-            conv = [{"from": "human", "value": r["prompt"]},
-                    {"from": "gpt", "value": r["response"]}]
-            f.write(json.dumps({"conversations": conv}, ensure_ascii=False) + "\n")
+    try:
+        with open(OUT_FILE, "w", encoding="utf-8") as f:
+            for r in final:
+                conv = [
+                    {"from": "human", "value": r["prompt"]},
+                    {"from": "gpt", "value": r["response"]},
+                ]
+                f.write(json.dumps({"conversations": conv}, ensure_ascii=False) + "\n")
+    except OSError as e:
+        print(f"[LỖI] Không ghi được {OUT_FILE}: {e}")
+        return
 
-    with open(LOG_FILE, "w", encoding="utf-8") as f:
-        f.write(f"custom_files={len(custom_files)} aux_files={len(aux_files)}\n")
-        f.write(f"unique={len(best)} weighted={len(final)}\n")
-        f.write(f"errors={total_errors} blocked={blocked} len_filtered={too_long}\n")
+    try:
+        with open(LOG_FILE, "w", encoding="utf-8") as f:
+            f.write(f"custom_files={len(custom_files)} aux_files={len(aux_files)}\n")
+            f.write(f"unique={len(best)} weighted={len(final)}\n")
+            f.write(
+                f"errors={total_errors} blocked={blocked} len_filtered={too_long}\n"
+            )
+    except OSError as e:
+        print(f"[LỖI] Không ghi được {LOG_FILE}: {e}")
 
     print(f"\nĐÃ GHI: {OUT_FILE} ({len(final)} dòng)  | Log: {LOG_FILE}")
 

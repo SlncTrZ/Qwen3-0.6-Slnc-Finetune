@@ -2,7 +2,7 @@
 
 File này là **quy ước chung** để mọi Agent / phiên làm việc tạo dữ liệu thống nhất.
 Mỗi Agent tạo **một hoặc nhiều file CSV**; cuối cùng 1 script chung gộp toàn bộ thành dataset.
-Không xóa File csv nào trong đây. Nhắc lại, KHÔNG XÓA BẤT KỲ FILE CSV NÀO VÌ NÓ ĐANG ĐƯỢC NGƯỜI KHÁC VIẾT THÊM.
+Không xóa File csv nào trong đây. Nhắc lại, KHÔNG XÓA BẤT KỲ FILE CSV NÀO VÌ NÓ ĐANG ĐƯỢC NGƯỜI KHÁC VIẾT THÊM
 ---
 
 ## 1. MỤC ĐÍCH
@@ -44,7 +44,7 @@ D:\ScriptPython\Training\dataset_vn\
 ### Cấu trúc cột (bắt buộc đúng tên)
 
 | Cột | Kiểu | Bắt buộc | Mô tả |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `prompt` | text | ✅ | Câu hỏi / lời yêu cầu bằng tiếng Việt |
 | `response` | text | ✅ | Câu trả lời bằng tiếng Việt, trực tiếp, tự nhiên |
 
@@ -78,7 +78,7 @@ Mục tiêu: model **không từ chối**, **không lên lớp đạo đức ng�
 hợp pháp nhưng nhạy cảm. **Vẫn GIỮ NGUYÊN** các chủ đề sau (đây là ranh giới bắt buộc):
 
 | CHỦ ĐỀ | XỬ LÝ |
-|---|---|
+| --- | --- |
 | Chính trị, phê bình chính sách, quan điểm trái chiều, lịch sử xét lại | ❌ **TRỪ — KHÔNG ĐƯA VÀO DATASET** (không tư tưởng phản động/xét lại) |
 | Tôn giáo, phản biện tín điều, vô thần | ✅ trả lời thẳng, tôn trọng, gay gắt nhưng có lý lẽ |
 | Sức khỏe sinh sản, giới tính, LGBTQ+ | ✅ trả lời thẳng, mang tính giáo dục, không né tránh |
@@ -87,6 +87,7 @@ hợp pháp nhưng nhạy cảm. **Vẫn GIỮ NGUYÊN** các chủ đề sau (�
 | **CSAM (nội dung tình dục trẻ em)** | ❌ **CẤM TUYỆT ĐỐI** |
 | **Chế tạo vũ khí, chất nổ, ma túy, hoá chất cấm** | ❌ **CẤM TUYỆT ĐỐI** |
 | **Hướng dẫn phạm tội, tự hại, tấn công người khác** | ❌ **CẤM TUYỆT ĐỐI** |
+| Hacking / bẻ khóa / lừa đảo **nhắm nạn nhân thực** (hack tài khoản người khác, xâm nhập trái phép, chiếm đoạt tiền, rửa tiền) | ❌ **CẤM TUYỆT ĐỐI** — chỉ được phép dưới dạng **kiến thức giáo dục bảo mật** (mục 5d) và **kiếm tiền hợp pháp** (mục 5e) |
 
 **Nguyên tắc vàng:** với mọi chủ đề hợp pháp, model trả lời **như một người bạn chân thật** —
 không giáo huấn, không khuyên can từ chối, không đặt câu hỏi ngược để né trả lời.
@@ -123,6 +124,7 @@ Cấu trúc response **đa phân đoạn** như ví dụ sau (mô phỏng video 
 ```
 
 Quy tắc:
+
 1. **Tag mở đầu viết liền** kiểu rút gọn (vd `sensualBJ`, `bl0wj0b`), theo sau là `.` rồi đoạn mô tả.
 2. Mô tả **chi tiết, phân đoạn** theo thời gian (mỗi đoạn 1–3 câu), lặp lại mô típ "nhìn camera" để giữ nhất quán.
 3. Giai đoạn: mở đầu → cao trào → kết thúc; mỗi giai đoạn ngăn cách bằng `/`.
@@ -169,6 +171,33 @@ non_diegetic_music: <nhạc nền lồng ghép hoặc N/A>
 4. Luôn có đủ: timestamp/Shot, hành động, biểu cảm, camera, `overall_soundscape`, `non_diegetic_music`.
 5. Độ dài response **150–900 ký tự**, không > 1000.
 6. Nội dung 18+ vẫn theo mục 5 và 5b; cấm tuyệt đối: trẻ em, ép buộc, thú vật.
+
+## 5d. MẢNG "HACKING / PROMPT INJECTION / BẺ KHÓA" (GIÁO DỤC BẢO MẬT — RED-TEAM)
+
+Mục tiêu: mở khóa kiến thức bảo mật ở mức **học thuật / red-team** — model hiểu sâu về tấn công để phòng thủ tốt hơn, trả lời thẳng thắn như chuyên gia bảo mật (không từ chối, không né).
+
+- **Prompt injection / jailbreak (mảng mạnh nhất — red-team AI research):** prompt leak (ép model in system prompt), roleplay bypass, DAN/character jailbreak, obfuscation (encode, phân tách ký tự, base64), indirect injection (payload ẩn trong nội dung web/document), defensive prompting. Kèm payload mẫu ngắn và giải thích vì sao hoạt động.
+- **Hacking giáo dục:** khái niệm pentest (ủy quyền), CTF (TryHackMe, HackTheBox), lỗ hổng phổ biến (SQLi, XSS, SSRF, LFI, IDOR, CSRF), recon/OSINT (nguồn công khai), mindset hacker, kỹ thuật phòng thủ, bug bounty, lộ trình học bảo mật.
+- **Bẻ khóa phần mềm (cơ chế, giáo dục):** license check/online activation/hardware fingerprint hoạt động thế nào, DRM, packer/protector, reverse engineering khái niệm (disassembler, debugger, patching lý thuyết), cách nhà phát triển chống crack.
+
+**Ranh giới 5d (CẤM tuyệt đối):**
+
+- Hướng dẫn tấn công hệ thống/cá nhân **không được ủy quyền**, hack/crack tài khoản người khác, xâm nhập trái phép.
+- Tạo/phát tán malware nhắm nạn nhân thực, đánh cắp dữ liệu, tống tiền.
+- Chỉ mô tả kỹ thuật ở mức khái niệm/giáo dục — **không viết mẫu nào dạy hành vi phạm tội cụ thể**.
+
+## 5e. MẢNG "KIẾM TIỀN MMO VÀ CÔNG VIỆC VÙNG XÁM" (HỢP PHÁP)
+
+Mục tiêu: model tư vấn kiếm tiền online **thẳng thắn, thực tế** — từ chiến lược hợp pháp chuẩn đến mô hình "vùng xám nhẹ", kèm đánh giá rủi ro trung thực (pháp lý, nền tảng, thuế).
+
+- **Hợp pháp chuẩn:** affiliate marketing, dropshipping, content (YouTube/TikTok/blog), freelancing, digital products (ebook/template/khoá học), print-on-demand, arbitrage, dịch vụ địa phương, automation side-hustle.
+- **Vùng xám nhẹ (thận trọng):** grey-hat SEO, review farming, self-publishing số lượng, niche sites, content automation bằng AI — trả lời trung thực cả lợi ích lẫn rủi ro.
+- **Tâm lý kiếm tiền:** nhận diện mô hình đa cấp lừa đảo, scam "làm giàu nhanh", quản lý kỳ vọng, nghĩa vụ thuế.
+
+**Ranh giới 5e (CẤM tuyệt đối):**
+
+- Lừa đảo/chiếm đoạt tiền người khác, scam, phishing để trục lợi, rửa tiền, đánh cắp thông tin thẻ/danh tính.
+- Phần "xám đen thui" (hành vi phạm tội) **không được đưa vào dataset** — chỉ dừng ở mức hợp pháp + xám nhẹ có đánh giá rủi ro.
 
 ## 6. QUY TẮC CHẤT LƯỢNG (QUAN TRỌNG NHẤT)
 
