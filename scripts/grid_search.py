@@ -5,10 +5,13 @@ Chạy: .unsloth-env\Scripts\python.exe grid_search.py
 """
 import sys
 import json
+import os
 import time
 import requests
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 URL = "http://localhost:11434/api/generate"
 MODEL = "qwen3-0.6b-finetuned"
@@ -27,7 +30,7 @@ TEST_PROMPTS = [
 ]
 
 MAX_NEW_TOKENS = 150
-OUTPUT_FILE = "grid_search_results.txt"
+OUTPUT_FILE = os.path.join(BASE_DIR, "grid_search_results.txt")
 
 
 def generate(prompt: str, temperature: float, repeat_penalty: float, top_p: float) -> str:

@@ -7,7 +7,7 @@ echo  Output: output_lora_merged
 echo  Estimated time: ~15 minutes
 echo ============================================
 echo.
-"D:\ScriptPython\Training\.unsloth-env\Scripts\python.exe" "D:\ScriptPython\Training\finetune_qwen3.py"
+"%~dp0..\.unsloth-env\Scripts\python.exe" "%~dp0finetune_qwen3.py"
 echo.
 if %errorlevel%==0 (
     echo Training completed successfully!
