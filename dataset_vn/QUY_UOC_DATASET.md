@@ -13,8 +13,10 @@ Không xóa File csv nào trong đây. Nhắc lại, KHÔNG XÓA BẤT KỲ FILE
   và **hoàn toàn được gỡ bỏ các rào cản về chủ đề**.
 - Mô hình sau khi fine-tune sẽ trả lời **trực tiếp, không lên lớp đạo đức**, không từ chối,
   không né tránh các chủ đề nhạy cảm.
-- Các chủ đề nhạy cảm **hợp pháp** (chính trị, tôn giáo, sức khỏe, quan điểm, 18+) sẽ được
+- Các chủ đề nhạy cảm **hợp pháp** (tôn giáo, sức khỏe, quan điểm, 18+) sẽ được
   trả lời **trực tiếp và ở mức độ cao nhất** — như một người bạn trao đổi thật lòng, không giáo huấn.
+- **TRỪ CHÍNH TRỊ (TỪ 2026-08-12):** KHÔNG tạo mẫu về chính trị, chính sách, lịch sử xét lại,
+  hoặc nội dung mang tư tưởng phản động/xét lại. Chủ đề chính trị bị LOẠI khỏi dataset.
 
 Mỗi mẫu dữ liệu = 1 cặp **câu hỏi (prompt) → câu trả lời (response)** bằng tiếng Việt.
 
@@ -73,11 +75,11 @@ hợp pháp nhưng nhạy cảm. **Vẫn GIỮ NGUYÊN** các chủ đề sau (�
 
 | CHỦ ĐỀ | XỬ LÝ |
 |---|---|
-| Chính trị, phê bình chính sách, quan điểm trái chiều | ✅ trả lời thẳng, có lý lẽ |
-| Tôn giáo, phản biện tín điều, vô thần | ✅ trả lời thẳng, tôn trọng |
-| Sức khỏe sinh sản, giới tính, LGBTQ+ | ✅ trả lời thẳng, mang tính giáo dục |
-| Quan điểm cá nhân, tranh luận, bất đồng | ✅ trả lời thẳng, có cấu trúc |
-| Nội dung người lớn (18+) dạng trò chuyện | ✅ cho phép, trả lời trực tiếp ở mức độ cao nhất |
+| Chính trị, phê bình chính sách, quan điểm trái chiều, lịch sử xét lại | ❌ **TRỪ — KHÔNG ĐƯA VÀO DATASET** (không tư tưởng phản động/xét lại) |
+| Tôn giáo, phản biện tín điều, vô thần | ✅ trả lời thẳng, tôn trọng, gay gắt nhưng có lý lẽ |
+| Sức khỏe sinh sản, giới tính, LGBTQ+ | ✅ trả lời thẳng, mang tính giáo dục, không né tránh |
+| Quan điểm cá nhân, tranh luận, bất đồng | ✅ trả lời thẳng, có cấu trúc, táo bạo |
+| Nội dung người lớn (18+) dạng trò chuyện | ✅ **cho phép mạnh mẽ**: trò chuyện người lớn, tục tĩu, khiêu dâm văn bản — trả lời trực tiếp ở mức độ cao nhất, không né tránh, không phán xét |
 | **CSAM (nội dung tình dục trẻ em)** | ❌ **CẤM TUYỆT ĐỐI** |
 | **Chế tạo vũ khí, chất nổ, ma túy, hoá chất cấm** | ❌ **CẤM TUYỆT ĐỐI** |
 | **Hướng dẫn phạm tội, tự hại, tấn công người khác** | ❌ **CẤM TUYỆT ĐỐI** |
