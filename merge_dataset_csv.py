@@ -97,6 +97,7 @@ def main():
     custom_files += sorted(glob.glob(os.path.join(DATA_DIR, "custom_*.csv")))
     custom_files = sorted(set(custom_files))
     aux_files = sorted(glob.glob(os.path.join(DATA_DIR, "aux_*.csv")))
+    allow_files = sorted(glob.glob(os.path.join(DATA_DIR, "_manual_allowlist_*.csv")))
 
     all_rows = []  # list of (weight, row)
     total_errors = 0
@@ -139,6 +140,21 @@ def main():
             kept += 1
         print(f"  {os.path.basename(fp)}: {kept} mẫu giữ lại")
 
+    print("\n== Gộp file ALLOWLIST (trọng số x3, bỏ qua bộ lọc cấm) ==")
+    for fp in allow_files:
+        rows, errors, _ = validate_file(fp)
+        for e in errors:
+            print(f"  [LỖI] {os.path.basename(fp)}: {e}")
+        total_errors += len(errors)
+        kept = 0
+        for r in rows:
+            if len(r["response"]) < MIN_LEN or len(r["response"]) > MAX_LEN:
+                too_long += 1
+                continue
+            all_rows.append((3, r))
+            kept += 1
+        print(f"  {os.path.basename(fp)}: {kept} mẫu giữ lại")
+
     print(
         f"\nTổng lỗi: {total_errors} | Bị chặn (cấm): {blocked} | Quá ngắn/dài: {too_long}"
     )
@@ -176,6 +192,7 @@ def main():
     try:
         with open(LOG_FILE, "w", encoding="utf-8") as f:
             f.write(f"custom_files={len(custom_files)} aux_files={len(aux_files)}\n")
+            f.write(f"allow_files={len(allow_files)}\n")
             f.write(f"unique={len(best)} weighted={len(final)}\n")
             f.write(
                 f"errors={total_errors} blocked={blocked} len_filtered={too_long}\n"

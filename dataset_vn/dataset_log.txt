@@ -1,3 +1,4 @@
 custom_files=525 aux_files=0
-unique=5225 weighted=15675
+allow_files=1
+unique=5255 weighted=15765
 errors=0 blocked=30 len_filtered=5
