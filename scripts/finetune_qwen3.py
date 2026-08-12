@@ -2,18 +2,41 @@ import sys
 import os
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-from unsloth import FastLanguageModel
-from unsloth import is_bfloat16_supported
-from datasets import load_dataset
-from trl import SFTTrainer, SFTConfig
+import argparse
 
-MODEL_PATH = "D:/ScriptPython/Training/models/Qwen3-0.6B"
-OUTPUT_DIR = "D:/ScriptPython/Training/output_lora"
+parser = argparse.ArgumentParser(description="Fine-tune QLoRA 4-bit bằng Unsloth")
+parser.add_argument("--model", default="D:/ScriptPython/Training/models/Qwen3-0.6B",
+                    help="Đường dẫn model base (mặc định: models/Qwen3-0.6B)")
+parser.add_argument("--steps", type=int, default=500,
+                    help="Số bước train max_steps (vd 200 / 500 / 5000)")
+parser.add_argument("--dataset", default="D:/ScriptPython/Training/dataset_vn/merged_vn_uncensored.jsonl",
+                    help="File dataset jsonl (mặc định: merged_vn_uncensored.jsonl)")
+parser.add_argument("--output", default="D:/ScriptPython/Training/output_lora",
+                    help="Thư mục output LoRA + merged")
+args = parser.parse_args()
+
+MODEL_PATH = args.model
+OUTPUT_DIR = args.output
+DATASET_FILE = args.dataset
+MAX_STEPS = args.steps
+
 MAX_SEQ_LENGTH = 2048
 LORA_R = 16
 LORA_ALPHA = 16
 LORA_DROPOUT = 0.0
 TARGET_MODULES = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+
+print("=== CẤU HÌNH FINETUNE ===")
+print("Model :", MODEL_PATH)
+print("Dataset:", DATASET_FILE)
+print("Steps :", MAX_STEPS)
+print("Output:", OUTPUT_DIR)
+print("========================")
+
+from unsloth import FastLanguageModel
+from unsloth import is_bfloat16_supported
+from datasets import load_dataset
+from trl import SFTTrainer, SFTConfig
 
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name=MODEL_PATH,
@@ -35,7 +58,6 @@ model = FastLanguageModel.get_peft_model(
     loftq_config=None,
 )
 
-DATASET_FILE = "D:/ScriptPython/Training/dataset_vn/merged_vn_uncensored.jsonl"
 dataset = load_dataset("json", data_files=DATASET_FILE, split="train")
 print("Total samples:", len(dataset))
 
@@ -69,7 +91,7 @@ trainer = SFTTrainer(
         per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
         warmup_steps=5,
-        num_train_epochs=8,
+        max_steps=MAX_STEPS,
         learning_rate=2e-4,
         fp16=not is_bfloat16_supported(),
         bf16=is_bfloat16_supported(),
@@ -79,7 +101,6 @@ trainer = SFTTrainer(
         lr_scheduler_type="linear",
         seed=42,
         output_dir=OUTPUT_DIR,
-        max_steps=-1,
         report_to="none",
     ),
 )

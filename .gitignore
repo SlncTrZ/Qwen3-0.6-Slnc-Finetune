@@ -5,3 +5,4 @@ gguf_out_gguf/
 models/
 *.pyc
 __pycache__/
+unsloth_compiled_cache/
