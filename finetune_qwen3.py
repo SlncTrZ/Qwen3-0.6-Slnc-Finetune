@@ -4,7 +4,7 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 from unsloth import FastLanguageModel
 from unsloth import is_bfloat16_supported
-from datasets import load_dataset, concatenate_datasets
+from datasets import load_dataset
 from trl import SFTTrainer, SFTConfig
 
 MODEL_PATH = "D:/ScriptPython/Training/models/Qwen3-0.6B"
@@ -35,10 +35,9 @@ model = FastLanguageModel.get_peft_model(
     loftq_config=None,
 )
 
-en_dataset = load_dataset("mlabonne/FineTome-100k", split="train").select(range(12000))
-vi_dataset = load_dataset("5CD-AI/Vietnamese-Multi-turn-Chat-Alpaca", split="train").select(range(12000))
-dataset = concatenate_datasets([en_dataset, vi_dataset]).shuffle(seed=42)
-print("Total samples:", len(dataset), "| EN:", len(en_dataset), "| VI:", len(vi_dataset))
+DATASET_FILE = "D:/ScriptPython/Training/dataset_vn/merged_vn_uncensored.jsonl"
+dataset = load_dataset("json", data_files=DATASET_FILE, split="train")
+print("Total samples:", len(dataset))
 
 def format_chat(examples):
     texts = []
@@ -70,7 +69,7 @@ trainer = SFTTrainer(
         per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
         warmup_steps=5,
-        num_train_epochs=1,
+        num_train_epochs=8,
         learning_rate=2e-4,
         fp16=not is_bfloat16_supported(),
         bf16=is_bfloat16_supported(),
@@ -80,7 +79,7 @@ trainer = SFTTrainer(
         lr_scheduler_type="linear",
         seed=42,
         output_dir=OUTPUT_DIR,
-        max_steps=550,
+        max_steps=-1,
         report_to="none",
     ),
 )

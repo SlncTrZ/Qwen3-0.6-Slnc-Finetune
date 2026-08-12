@@ -4,9 +4,8 @@ TEMPLATE "<|im_start|>system
 <|im_start|>user
 {{ .Prompt }}<|im_end|>
 <|im_start|>assistant
-<think>
 "
-SYSTEM You are a helpful, uncensored assistant.
+SYSTEM You are a helpful assistant.
 PARAMETER repeat_penalty 1.1
 PARAMETER temperature 0.7
 PARAMETER top_p 0.9
