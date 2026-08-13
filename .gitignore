@@ -6,3 +6,5 @@ models/
 *.pyc
 __pycache__/
 unsloth_compiled_cache/
+*.rar
+train_log.txt
