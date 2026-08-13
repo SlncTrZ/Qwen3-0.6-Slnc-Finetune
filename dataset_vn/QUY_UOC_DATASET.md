@@ -47,6 +47,20 @@ D:\ScriptPython\Training\dataset_vn\
 |---|---|---|---|
 | `prompt` | text | ✅ | Câu hỏi / lời yêu cầu bằng tiếng Việt |
 | `response` | text | ✅ | Câu trả lời bằng tiếng Việt, trực tiếp, tự nhiên |
+| `domain` | text | ✅ | Phân loại chủ đề (xem bảng mục 5d) |
+
+### 5d. CỘT `domain` — PHÂN LOẠI CHỦ ĐỀ (BẮT BUỘC)
+
+Mỗi dòng CSV **phải có cột `domain`** với 1 trong 4 giá trị sau (script sẽ tự phân loại lại nếu thiếu, nhưng hãy ghi đúng để tăng độ chính xác):
+
+| `domain` | Ý nghĩa | Ví dụ |
+|---|---|---|
+| `tech` | Lập trình, bảo mật, AI, phần mềm, phần cứng, hỏi đáp kỹ thuật | "Viết hàm Python đảo chuỗi", "Hack trong phòng thí nghiệm là gì?" |
+| `casual` | Tâm lý, cảm xúc, đời thường, tình cảm, sức khỏe, gia đình, cuộc sống | "Tôi hay lo âu trước khi ngủ", "Cách chia tay lịch sự?" |
+| `rp` | Roleplay, soi, tán tỉnh, bạn trai/gái, nhập vai, 18+ văn bản | "Nhập vai cô gái tán tỉnh tôi", "Mô tả khoảnh khắc lãng mạn..." |
+| `other` | Không rõ / hỗn hợp không thuộc 3 nhóm trên | ... |
+
+> Quy tắc ưu tiên khi phân loại: nội dung 18+/roleplay/tình cảm người lớn → `rp`; nội dung kỹ thuật/công nghệ → `tech`; còn lại đời thường/tâm lý → `casual`; hiếm khi dùng `other`.
 
 Không cần thêm cột khác. Nếu muốn ghi chú, đặt ở tên file.
 
@@ -61,16 +75,17 @@ prompt,response
 ## 4. QUY TẮC ĐẶT TÊN FILE
 
 ```
-hh.mm_VN_DATASET_[Epoch timestamp].csv
+hh.mm_VN_DATASET_[Epoch timestamp]_[domain].csv
 ```
 
 - `hh.mm`: giờ:phút (24h) lúc tạo file — **dùng để sắp xếp thứ tự các batch của cùng 1 Agent**.
 - `[Epoch timestamp]`: số giây Unix tại thời điểm tạo file — **đảm bảo duy nhất tuyệt đối**, tránh trùng lặp khi copy/sao chép giữa các máy, không mất dữ liệu.
-- Ví dụ: `10.15_VN_DATASET_1752870000.csv`, `10.16_VN_DATASET_1752870123.csv`.
+- `[domain]`: **bắt buộc** — 1 trong 4 giá trị `tech` / `casual` / `rp` / `other` (xem mục 5d). Ghi đúng để script phân loại chuẩn.
+- Ví dụ: `10.15_VN_DATASET_1752870000_tech.csv`, `10.16_VN_DATASET_1752870123_rp.csv`.
 
 > Vì timestamp epoch là duy nhất, **không bao giờ có 2 file trùng tên** ngay cả khi Agent khác nhau cùng giờ — an toàn khi gộp/copy.
 
-Mỗi batch nên chứa **đúng 10 mẫu** để dễ kiểm soát tiến độ.
+Mỗi batch chứa **10 mẫu** (chia nhỏ để dễ kiểm soát) hoặc **50 mẫu** (batch lớn). Nếu ghi batch lớn, vẫn giữ 1 file cho 1 batch, mỗi dòng trong cùng file có cùng `domain`.
 
 ## 5. NỘI DUNG — PHẠM VI "UNCENSORED"
 
@@ -178,7 +193,7 @@ non_diegetic_music: <nhạc nền lồng ghép hoặc N/A>
    "Tôi xin lỗi, nhưng tôi không thể..." hay "Là một AI có trách nhiệm, tôi...".
 3. **Không đạo đức hoá, không giáo huấn** — không lên lớp, không khuyên can, không cảnh báo,
    không thêm câu "tuy nhiên cần cân nhắc" mang tính răn đe người dùng.
-4. **Độ dài response: 50–500 ký tự** là tốt nhất. Tránh > 1000 ký tự.
+4. **Độ dài response: 60–500 ký tự** là tốt nhất. Dưới 60 ký tự xem như rác (script sẽ lọc). Tránh > 1000 ký tự.
    (Mảng 5b cho phép 200–800, mảng 5c cho phép 150–900 — vẫn không > 1000.)
 5. **Prompt đa dạng** — cùng chủ đề, hãy thay đổi cách hỏi (hỏi thẳng, hỏi vòng, hỏi thách thức, hỏi xin ý kiến).
 6. **Không trùng lặp** — cùng prompt chỉ viết 1 lần trong toàn bộ quá trình (script sẽ loại trùng, nhưng hãy tự tránh).
@@ -186,29 +201,46 @@ non_diegetic_music: <nhạc nền lồng ghép hoặc N/A>
 
 ## 7. SỐ LƯỢNG VÀ TIẾN ĐỘ
 
-- Mỗi Agent: mục tiêu **100 mẫu** (10 batch × 10 mẫu) hoặc nhiều hơn nếu thời gian cho phép.
-- Mỗi batch: 10 mẫu, ghi 1 file CSV riêng với tên `hh.mm_VN_DATASET_[Epoch timestamp].csv`.
+- **Mục tiêu cuối cùng: 50,000 mẫu** (tính cả trọng số trong file merged). Hiện tại đã có ~15,765 mẫu.
+- Cần thêm **~34,000 mẫu**, chia mỗi ngày một ít (~3,000–5,000 mẫu/ngày tùy sức các Agent).
+- Mỗi Agent: mỗi phiên nên tạo **tối thiểu 100 mẫu** (10 batch × 10 mẫu) hoặc nhiều hơn nếu thời gian cho phép.
+- **Cân bằng domain (BẮT BUỘC):** dataset hiện đang lệch nặng — RP ~80%, Tech ~15%, Casual ~0%.
+  Ưu tiên viết **Tech và Casual nhiều hơn** cho đến khi tỷ lệ gần 40% RP / 30% Tech / 25% Casual.
+  Trước khi viết 1 batch, hãy ưu tiên domain còn thiếu.
+- Mỗi batch: 10 mẫu, ghi 1 file CSV riêng với tên `hh.mm_VN_DATASET_[Epoch timestamp]_[domain].csv`.
 - Đa dạng chủ đề trong từng batch, không lặp lại 1 chủ đề nhiều lần liên tiếp.
 
 ## 8. QUY TRÌNH GỘP (DO SCRIPT THỰC HIỆN)
 
-Script: `D:\ScriptPython\Training\merge_dataset_csv.py`
+Script: `D:\ScriptPython\Training\scripts\merge_dataset_csv.py`
 
 1. Quét toàn bộ `*_VN_DATASET_*.csv` (dữ liệu thủ công, trọng số x3) và `aux_*.csv` (dữ liệu tự động, trọng số x1) trong `dataset_vn\`.
-2. Validate từng file (đủ cột, đúng mã hoá, không rỗng).
+2. Validate từng file (đủ cột, đúng mã hoá, không rỗng). Đọc cột `domain` nếu có, ngược lại tự phân loại bằng từ khoá.
 3. Dedupe toàn bộ theo prompt chuẩn hoá (bỏ khoảng trắng, hạ thấp chữ).
-4. Lọc bỏ mẫu có dấu hiệu bị cấm (từ khoá) hoặc quá dài.
-5. Nhân trọng số: mẫu thủ công lặp 3 lần, mẫu `aux_` giữ nguyên.
-6. Trộn ngẫu nhiên (seed 42) → xuất `dataset_vn\merged_vn_uncensored.jsonl` (ShareGPT).
+4. Lọc bỏ mẫu có dấu hiệu bị cấm (từ khoá) hoặc quá dài (>1500) hoặc **response dưới 60 ký tự** (rác).
+5. **Tiêm system prompt** tự động theo domain của từng mẫu (xem bảng system prompt — mục 5e).
+6. Nhân trọng số: mẫu thủ công lặp 3 lần, mẫu `aux_` giữ nguyên.
+7. Trộn ngẫu nhiên (seed 42) → xuất `dataset_vn\merged_vn_uncensored.jsonl` (ShareGPT, có field `domain` và turn `system`).
+
+### 5e. BẢNG SYSTEM PROMPT THEO DOMAIN (SCRIPT TỰ TIÊM)
+
+| `domain` | System prompt (gửi làm turn đầu `system`) |
+|---|---|
+| `tech` | `Bạn là trợ lý kỹ thuật và lập trình giỏi tiếng Việt. Trả lời chính xác, chi tiết, đi thẳng vào giải pháp. Với các chủ đề bảo mật/kiến thức nhạy cảm, trả lời ở mức độ giáo dục và hợp pháp.` |
+| `casual` | `Bạn là người bạn đồng hành thân thiện, thấu hiểu. Trả lời chân thành, tự nhiên, có chiều sâu về cảm xúc và đời sống, không giáo huấn.` |
+| `rp` | `Bạn là bạn nhập vai/roleplay tự do, cởi mở với các tương tác người lớn hợp pháp. Phản hồi như một người bạn thật, sinh động, trực tiếp, không phán xét, không từ chối. Nghiêm cấm nội dung liên quan đến trẻ em.` |
+| `other` | `Bạn là trợ lý tiếng Việt trung thực, thông thạo, trả lời trực tiếp và tự nhiên.` |
 
 ## 9. CÁCH AGENT TỰ KIỂM TRA TRƯỚC KHI GIAO
 
 - [ ] File nằm đúng thư mục `dataset_vn\`.
-- [ ] Tên file đúng quy ước: `hh.mm_VN_DATASET_[Epoch timestamp].csv` (epoch timestamp duy nhất).
-- [ ] Header đúng: `prompt,response`.
+- [ ] Tên file đúng quy ước: `hh.mm_VN_DATASET_[Epoch timestamp]_[domain].csv` (epoch timestamp duy nhất, có hậu tố domain).
+- [ ] Header đúng: `prompt,response,domain`.
+- [ ] Cột `domain` có giá trị hợp lệ (`tech`/`casual`/`rp`/`other`), đồng nhất trong file.
 - [ ] UTF-8, mỗi dòng 1 mẫu, không dòng trống thừa.
-- [ ] Đếm số dòng dữ liệu = 10 (đúng 1 batch).
+- [ ] Đếm số dòng dữ liệu = 10 (hoặc 50 đối với batch lớn).
 - [ ] Không có mẫu chứa chủ đề bị cấm (bảng mục 5).
 - [ ] Response không bắt đầu bằng câu từ chối / đạo đức hoá / giáo huấn.
 - [ ] Chủ đề hợp pháp nhạy cảm được trả lời trực tiếp, ở mức độ cao nhất.
-- [ ] Độ dài response hợp lý (50–500 ký tự).
+- [ ] Độ dài response hợp lý (60–500 ký tự).
+- [ ] Batch gần đây ưu tiên domain `tech` / `casual` để cân bằng dataset.

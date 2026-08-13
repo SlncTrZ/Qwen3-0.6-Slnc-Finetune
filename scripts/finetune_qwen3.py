@@ -9,6 +9,8 @@ parser.add_argument("--model", default="D:/ScriptPython/Training/models/Qwen3-0.
                     help="Đường dẫn model base (mặc định: models/Qwen3-0.6B)")
 parser.add_argument("--steps", type=int, default=500,
                     help="Số bước train max_steps (vd 200 / 500 / 5000)")
+parser.add_argument("--epochs", type=float, default=None,
+                    help="Số epoch num_train_epochs (ưu tiên hơn --steps, vd 1 / 2)")
 parser.add_argument("--dataset", default="D:/ScriptPython/Training/dataset_vn/merged_vn_uncensored.jsonl",
                     help="File dataset jsonl (mặc định: merged_vn_uncensored.jsonl)")
 parser.add_argument("--output", default="D:/ScriptPython/Training/output_lora",
@@ -19,6 +21,7 @@ MODEL_PATH = args.model
 OUTPUT_DIR = args.output
 DATASET_FILE = args.dataset
 MAX_STEPS = args.steps
+NUM_EPOCHS = args.epochs
 
 MAX_SEQ_LENGTH = 2048
 LORA_R = 16
@@ -29,7 +32,10 @@ TARGET_MODULES = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj"
 print("=== CẤU HÌNH FINETUNE ===")
 print("Model :", MODEL_PATH)
 print("Dataset:", DATASET_FILE)
-print("Steps :", MAX_STEPS)
+if NUM_EPOCHS is not None:
+    print("Epochs:", NUM_EPOCHS)
+else:
+    print("Steps :", MAX_STEPS)
 print("Output:", OUTPUT_DIR)
 print("========================")
 
@@ -82,16 +88,15 @@ trainer = SFTTrainer(
     model=model,
     tokenizer=tokenizer,
     train_dataset=dataset,
-    dataset_text_field="text",
-    max_seq_length=MAX_SEQ_LENGTH,
-    dataset_num_proc=2,
-    packing=False,
     args=SFTConfig(
-        dataset_text_field="text",
+        output_dir=OUTPUT_DIR,
+        max_length=MAX_SEQ_LENGTH,
+        packing=False,
         per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
         warmup_steps=5,
         max_steps=MAX_STEPS,
+        num_train_epochs=NUM_EPOCHS,
         learning_rate=2e-4,
         fp16=not is_bfloat16_supported(),
         bf16=is_bfloat16_supported(),
@@ -100,7 +105,6 @@ trainer = SFTTrainer(
         weight_decay=0.01,
         lr_scheduler_type="linear",
         seed=42,
-        output_dir=OUTPUT_DIR,
         report_to="none",
     ),
 )

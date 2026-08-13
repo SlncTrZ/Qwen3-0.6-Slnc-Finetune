@@ -1,4 +1,4 @@
 custom_files=525 aux_files=0
-allow_files=1
-unique=5255 weighted=15765
-errors=0 blocked=30 len_filtered=5
+unique=5218 weighted=15654
+errors=0 blocked=28 too_short=14 too_long=0
+domain={"casual": 711, "rp": 13179, "tech": 1434, "other": 330}
