@@ -1,0 +1,19 @@
+﻿prompt,response,domain
+Viết hàm Python đảo ngược chuỗi mà không dùng slicing?,"Duyệt ngược từ cuối xâu và ghép dần vào kết quả:
+
+def dao_nguoc(s):
+    kq = """"
+    for k in range(len(s)-1, -1, -1):
+        kq += s[k]
+    return kq
+
+Hoặc đơn giản hơn: ''.join(reversed(s)). Cả hai đều rõ ràng, không phụ thuộc cú pháp slicing.",tech
+Git: làm sao để huỷ commit cuối cùng mà vẫn giữ thay đổi?,"Dùng git reset --soft HEAD~1, lệnh này đưa con trỏ về commit trước nhưng phần thay đổi vẫn nằm trong staging area. Nếu muốn bỏ luôn trạng thái staging thì thay bằng --mixed. Còn nếu muốn xoá cả thay đổi luôn thì dùng --hard, nhưng cẩn thận vì không lấy lại được.",tech
+RAM là gì và nó khác ổ cứng như thế nào?,"RAM là bộ nhớ tạm, máy dùng để lưu dữ liệu đang xử lý để CPU truy xuất thật nhanh, nhưng tắt máy là mất hết. Ổ cứng thì lưu lâu dài, còn giữ dữ liệu khi ngắt điện. Nói gọn: RAM là bàn làm việc, ổ cứng là kho chứa. Tăng RAM giúp mở nhiều chương trình cùng lúc mượt hơn.",tech
+Học AI nên bắt đầu từ đâu nếu tôi đã biết Python cơ bản?,"Ôn lại đại số tuyến tính và xác suất ở mức vừa đủ, rồi học nền tảng học máy: hồi quy, phân loại, cách đánh giá mô hình. Sau đó tới mạng nơ-ron với PyTorch qua các bài nhận dạng chữ số, phân loại ảnh. Làm thật nhiều project nhỏ và đọc tài liệu chính thức thay vì chỉ cày video là tiến nhanh nhất.",tech
+Mã hoá dữ liệu trên ổ cứng để bảo mật thì dùng công cụ nào?,"Windows có sẵn BitLocker mã hoá toàn bộ ổ khá tiện khi máy có chip TPM. Muốn mã nguồn mở và linh hoạt hơn thì dùng Veracrypt, có thể tạo vùng chứa mã hoá riêng hoặc mã hoá nguyên phân vùng. Nhớ đặt mật khẩu mạnh và lưu bản ghi khôi phục, quên mật khẩu là mất dữ liệu vĩnh viễn.",tech
+Mạng nơ-ron học được bằng cách nào?,"Nó dự đoán rồi so kết quả với đáp án bằng hàm mất mát, sau đó tính độ dốc của lỗi theo từng trọng số bằng backpropagation và chỉnh trọng số đi theo hướng giảm lỗi qua gradient descent. Lặp lại qua nhiều batch dữ liệu, lỗi dần nhỏ lại và mẫu mạng tự tìm ra được đặc trưng từ chính dữ liệu.",tech
+Tại sao laptop chạy chậm mà RAM vẫn còn nhiều?,"RAM ít khi là thủ phạm nếu còn trống; chậm thường do ổ cứng cơ lỗi thời, nhiều ứng dụng tự khởi động, CPU bị nghẽn vì nóng hoặc dịch vụ ngầm ngốn tài nguyên. Nên mở Task Manager để xem cái nào ăn CPU, tắt bớt startup, vệ sinh tản nhiệt và ưu tiên thay SSD trước khi nghĩ tới nâng RAM.",tech
+SQL: join là gì và có những loại phổ biến nào?,"Join kết hợp dòng từ hai bảng dựa trên điều kiện khớp cột. Inner join chỉ lấy dòng khớp cả hai. Left join lấy toàn bộ bảng bên trái, bên phải thiếu thì điền NULL. Right join ngược lại. Full outer join giữ tất cả hai bên. Hay dùng nhất là inner và left; chọn hướng tuỳ bảng nào là bảng chính.",tech
+DevOps là gì và người mới nên tập gì trước tiên?,"DevOps là văn hoá kết hợp phát triển và vận hành để giao phần mềm tự động, nhanh và ổn định. Người mới nên bắt đầu từ git và quy trình CI: viết test tự động, rồi học đóng gói ứng dụng bằng Docker, tiếp theo dựng pipeline chạy build, test, deploy. Làm một pipeline đơn giản cho project nhỏ là cách hiểu nhanh nhất.",tech
+Unit test và integration test khác nhau thế nào?,"Unit test kiểm tra từng hàm hoặc module riêng lẻ, cô lập các phần khác bằng mock để xác nhận logic nội bộ đúng. Integration test đưa nhiều thành phần chạy cùng nhau kiểm tra xem chúng nối với nhau có đúng không, như đọc ghi database hay gọi API. Tốt nhất nên viết cả hai: unit nhiều và chạy nhanh, integration ít hơn để bắt lỗi kết nối.",tech
