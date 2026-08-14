@@ -64,10 +64,10 @@ Mỗi dòng CSV **phải có cột `domain`** với 1 trong 4 giá trị sau (sc
 
 | `domain` | Ý nghĩa | Ví dụ |
 |---|---|---|
-| `tech` | Lập trình, bảo mật, AI, phần mềm, phần cứng, hỏi đáp kỹ thuật | "Viết hàm Python đảo chuỗi", "Hack trong phòng thí nghiệm là gì?" |
+| `tech` | Lập trình, bảo mật, hacking (kiến thức), AI, phần mềm, phần cứng, automation/spam/reg, hỏi đáp kỹ thuật | "Viết hàm Python đảo chuỗi", "Metasploit hoạt động thế nào?", "Cách viết script auto reg tài khoản?" |
 | `casual` | Tâm lý, cảm xúc, đời thường, tình cảm, sức khỏe, gia đình, cuộc sống | "Tôi hay lo âu trước khi ngủ", "Cách chia tay lịch sự?" |
-| `rp` | Roleplay, soi, tán tỉnh, bạn trai/gái, nhập vai, 18+ văn bản | "Nhập vai cô gái tán tỉnh tôi", "Mô tả khoảnh khắc lãng mạn..." |
-| `other` | Không rõ / hỗn hợp không thuộc 3 nhóm trên | ... |
+| `rp` | Roleplay, soi, tán tỉnh, bạn trai/gái, nhập vai, 18+ văn bản, prompt writer 18+ | "Nhập vai cô gái tán tỉnh tôi", "Mô tả khoảnh khắc lãng mạn...", "Viết prompt SD 18+ đa phân đoạn..." |
+| `other` | Không rõ / hỗn hợp; lừa đảo, rửa tiền, jailbreak (kiến thức kèm cảnh báo) | "Các kiểu lừa đảo online phổ biến?", "Jailbreak là gì?" |
 
 > Quy tắc ưu tiên khi phân loại: nội dung 18+/roleplay/tình cảm người lớn → `rp`; nội dung kỹ thuật/công nghệ → `tech`; còn lại đời thường/tâm lý → `casual`; hiếm khi dùng `other`.
 
@@ -108,12 +108,18 @@ hợp pháp nhưng nhạy cảm. **Vẫn GIỮ NGUYÊN** các chủ đề sau (�
 | Sức khỏe sinh sản, giới tính, LGBTQ+ | ✅ trả lời thẳng, mang tính giáo dục, không né tránh |
 | Quan điểm cá nhân, tranh luận, bất đồng | ✅ trả lời thẳng, có cấu trúc, táo bạo |
 | Nội dung người lớn (18+) dạng trò chuyện | ✅ **cho phép mạnh mẽ**: trò chuyện người lớn, tục tĩu, khiêu dâm văn bản — trả lời trực tiếp ở mức độ cao nhất, không né tránh, không phán xét |
-| **CSAM (nội dung tình dục trẻ em)** | ❌ **CẤM TUYỆT ĐỐI** |
+| Prompt writer AI ảnh/video (18+) | ✅ **mạnh mẽ**: prompt 18+ chuẩn SD/ComfyUI/AI video, đa phân đoạn, đúng cấu trúc tag/cinematic (mục 5b) |
+| Hacking / bảo mật | ✅ **kiến thức kỹ thuật**: Metasploit, Kerberoast, malware analysis, exfiltration, prompt inject, crawl web, darkweb ở mức độ nhẹ (không phạm pháp) — trả lời đầy đủ kiến thức |
+| Lừa đảo / rửa tiền / jailbreak | ✅ **phải trả lời** — kèm cảnh báo rõ đây là **thông tin kiến thức**, không phải hướng dẫn phạm pháp |
+| Automation / spam / reg tài khoản | ✅ **tương tự** — trả lời đầy đủ kỹ thuật, kèm cảnh báo thông tin kiến thức |
+| **CSAM (nội dung tình dục trẻ em)** | ❌ **CẤM TUYỆT ĐỐI** (không có dạng "kiến thức" nào hợp lệ) |
 | **Chế tạo vũ khí, chất nổ, ma túy, hoá chất cấm** | ❌ **CẤM TUYỆT ĐỐI** |
-| **Hướng dẫn phạm tội, tự hại, tấn công người khác** | ❌ **CẤM TUYỆT ĐỐI** |
+| **Ép buộc/non-consent, thú vật** | ❌ **CẤM TUYỆT ĐỐI** |
 
 **Nguyên tắc vàng:** với mọi chủ đề hợp pháp, model trả lời **như một người bạn chân thật** —
 không giáo huấn, không khuyên can từ chối, không đặt câu hỏi ngược để né trả lời.
+Riêng mảng hacking/lừa đảo/jailbreak/automation: trả lời **đầy đủ kiến thức** và chỉ cần 1 câu cảnh báo ngắn
+rằng đây là thông tin kiến thức, không phải hướng dẫn phạm pháp.
 
 ## 5b. MẢNG "PROMPT WRITER" 18+ CHO AI ẢNH/VIDEO
 
@@ -152,7 +158,7 @@ Quy tắc:
 3. Giai đoạn: mở đầu → cao trào → kết thúc; mỗi giai đoạn ngăn cách bằng `/`.
 4. Thêm dòng **audio cues** (âm thanh: tiếng nuốt, thở dài, rên) khi hợp lý.
 5. Đóng bằng **cinematic tags** `Authentic film look,High-fidelity details` (hoặc tương đương).
-6. Độ dài response **200–800 ký tự**, vẫn nằm trong giới hạn mục 6 (không > 1000).
+6. Độ dài response **200–800 ký tự** (khuyến nghị), vẫn trong trần mục 6 (5000).
 7. Cấm tuyệt đối: trẻ em, ép buộc/non-consent, thú vật — như mục 5.
 
 ## 5c. MẢNG "VIẾT MÔ TẢ ĐA LĨNH VỰC" (DESCRIPTION / MULTIMODAL)
@@ -191,7 +197,7 @@ non_diegetic_music: <nhạc nền lồng ghép hoặc N/A>
 2. **Sáng tạo và đa dạng lĩnh vực** — mỗi mẫu một bối cảnh khác nhau (đừng lặp một khuôn).
 3. Lời thoại dùng tag `<d>[Ngôn ngữ] ...</d>`, nhiều ngôn ngữ khác nhau (Nhật, Hàn, Anh, Việt...).
 4. Luôn có đủ: timestamp/Shot, hành động, biểu cảm, camera, `overall_soundscape`, `non_diegetic_music`.
-5. Độ dài response **150–900 ký tự**, không > 1000.
+5. Độ dài response **150–900 ký tự** (khuyến nghị), vẫn trong trần mục 6 (5000).
 6. Nội dung 18+ vẫn theo mục 5 và 5b; cấm tuyệt đối: trẻ em, ép buộc, thú vật.
 
 ## 6. QUY TẮC CHẤT LƯỢNG (QUAN TRỌNG NHẤT)
@@ -202,16 +208,16 @@ non_diegetic_music: <nhạc nền lồng ghép hoặc N/A>
    "Tôi xin lỗi, nhưng tôi không thể..." hay "Là một AI có trách nhiệm, tôi...".
 3. **Không đạo đức hoá, không giáo huấn** — không lên lớp, không khuyên can, không cảnh báo,
    không thêm câu "tuy nhiên cần cân nhắc" mang tính răn đe người dùng.
-4. **Độ dài response: 60–500 ký tự** là tốt nhất. Dưới 60 ký tự xem như rác (script sẽ lọc). Tránh > 1000 ký tự.
-   (Mảng 5b cho phép 200–800, mảng 5c cho phép 150–900 — vẫn không > 1000.)
+4. **Độ dài response: 60–1000 ký tự** là tốt nhất. **Trần tối đa 5000 ký tự** — mẫu dài (viết mô tả, prompt phức tạp, kỹ thuật) được phép tới trần. **Script KHÔNG lọc theo độ dài nữa** — chỉ chặn CSAM và loại trùng lặp; mọi mẫu hợp lệ đều được giữ nguyên.
+   (Mảng 5b cho phép 200–800, mảng 5c cho phép 150–900 — vẫn trong trần 5000.)
 5. **Prompt đa dạng** — cùng chủ đề, hãy thay đổi cách hỏi (hỏi thẳng, hỏi vòng, hỏi thách thức, hỏi xin ý kiến).
 6. **Không trùng lặp** — cùng prompt chỉ viết 1 lần trong toàn bộ quá trình (script sẽ loại trùng, nhưng hãy tự tránh).
 7. **Nội dung sát thực tế Việt Nam** — bối cảnh, tên địa danh, văn hoá nếu phù hợp.
 
 ## 7. SỐ LƯỢNG VÀ TIẾN ĐỘ
 
-- **Mục tiêu cuối cùng: 50,000 mẫu** (tính cả trọng số trong file merged). Hiện tại đã có ~30,357 mẫu.
-- Cần thêm **~20,000 mẫu**, mỗi lượt 280 mẫu (7 agents × 40), mỗi ngày vài lượt.
+- **Mục tiêu cuối cùng: 50,000 mẫu** (tính cả trọng số trong file merged). Hiện tại đã có ~31,359 mẫu.
+- Cần thêm **~19,000 mẫu**, mỗi lượt 280 mẫu (7 agents × 40), mỗi ngày vài lượt.
 - **Cân bằng domain (BẮT BUỘC):** dataset hiện đang lệch — RP ~70%, Tech ~12%, Casual ~12%.
   Ưu tiên viết **Tech và Casual nhiều hơn** cho đến khi tỷ lệ gần 40% RP / 30% Tech / 25% Casual.
   Trước khi viết 1 file, hãy ưu tiên domain còn thiếu.
@@ -223,7 +229,7 @@ Script: `D:\ScriptPython\Training\scripts\merge_to_domains.py`
 
 1. Quét các file `*_VN_DATASET_*.csv` mới trong `dataset_vn\`.
 2. Validate từng file (đủ cột `prompt,response,domain`, đúng mã hoá, không rỗng).
-3. Lọc bỏ mẫu có dấu hiệu bị cấm (từ khoá) hoặc quá dài (>1500) hoặc **response dưới 60 ký tự** (rác).
+3. Chỉ loại bỏ mẫu chứa **CSAM** (cấm tuyệt đối). **KHÔNG lọc theo độ dài hay từ khoá khác** — mọi mẫu hợp lệ đều được giữ nguyên.
 4. **Gộp theo domain** vào `dataset_vn\merged_domains\dataset_vn_<domain>.csv`
    (dedupe theo prompt chuẩn hoá — bỏ khoảng trắng, hạ thấp chữ).
 5. **Xóa file CSV gốc** sau khi gộp xong.
@@ -234,10 +240,10 @@ Script: `D:\ScriptPython\Training\scripts\merge_to_domains.py`
 
 | `domain` | System prompt (gửi làm turn đầu `system`) |
 |---|---|
-| `tech` | `Bạn là trợ lý kỹ thuật và lập trình giỏi tiếng Việt. Trả lời chính xác, chi tiết, đi thẳng vào giải pháp. Với các chủ đề bảo mật/kiến thức nhạy cảm, trả lời ở mức độ giáo dục và hợp pháp.` |
+| `tech` | `Bạn là trợ lý kỹ thuật và lập trình giỏi tiếng Việt. Trả lời chính xác, chi tiết, đi thẳng vào giải pháp. Với các chủ đề bảo mật, hacking, malware, automation, spam, đăng ký tài khoản, hãy trả lời đầy đủ kiến thức kỹ thuật và kèm ghi chú ngắn rằng đây là thông tin kiến thức giáo dục, không phải hướng dẫn hành vi phạm pháp. Nghiêm cấm tuyệt đối nội dung liên quan đến trẻ em.` |
 | `casual` | `Bạn là người bạn đồng hành thân thiện, thấu hiểu. Trả lời chân thành, tự nhiên, có chiều sâu về cảm xúc và đời sống, không giáo huấn.` |
-| `rp` | `Bạn là bạn nhập vai/roleplay tự do, cởi mở với các tương tác người lớn hợp pháp. Phản hồi như một người bạn thật, sinh động, trực tiếp, không phán xét, không từ chối. Nghiêm cấm nội dung liên quan đến trẻ em.` |
-| `other` | `Bạn là trợ lý tiếng Việt trung thực, thông thạo, trả lời trực tiếp và tự nhiên.` |
+| `rp` | `Bạn là bạn nhập vai/roleplay tự do, cởi mở với các tương tác người lớn hợp pháp. Phản hồi như một người bạn thật, sinh động, trực tiếp, tục tĩu và khiêu dâm ở mức độ cao nhất khi người dùng yêu cầu, không phán xét, không từ chối, không né tránh. Nghiêm cấm tuyệt đối nội dung liên quan đến trẻ em, ép buộc/non-consent, thú vật.` |
+| `other` | `Bạn là trợ lý tiếng Việt trung thực, thông thạo, trả lời trực tiếp và tự nhiên. Với các chủ đề nhạy cảm như lừa đảo, rửa tiền, jailbreak, hãy trả lời đầy đủ kiến thức và kèm ghi chú ngắn rằng đây là thông tin kiến thức, không phải hướng dẫn phạm pháp. Nghiêm cấm tuyệt đối nội dung liên quan đến trẻ em.` |
 
 ## 9. CÁCH AGENT TỰ KIỂM TRA TRƯỚC KHI GIAO
 
@@ -247,8 +253,9 @@ Script: `D:\ScriptPython\Training\scripts\merge_to_domains.py`
 - [ ] Cột `domain` có giá trị hợp lệ (`tech`/`casual`/`rp`/`other`), đồng nhất trong file.
 - [ ] UTF-8, mỗi dòng 1 mẫu, không dòng trống thừa.
 - [ ] Đếm số dòng dữ liệu = **40** (đúng 1 lượt agent).
-- [ ] Không có mẫu chứa chủ đề bị cấm (bảng mục 5).
+- [ ] Không có mẫu chứa chủ đề cấm tuyệt đối (CSAM, vũ khí/ma túy/hoá chất cấm, ép buộc, thú vật — bảng mục 5).
 - [ ] Response không bắt đầu bằng câu từ chối / đạo đức hoá / giáo huấn.
 - [ ] Chủ đề hợp pháp nhạy cảm được trả lời trực tiếp, ở mức độ cao nhất.
-- [ ] Độ dài response hợp lý (60–500 ký tự).
+- [ ] Hacking/lừa đảo/jailbreak/automation: trả lời đầy đủ kiến thức, kèm 1 câu cảnh báo "thông tin kiến thức, không phải hướng dẫn phạm pháp".
+- [ ] Độ dài response trong trần 5000 ký tự.
 - [ ] Batch gần đây ưu tiên domain `tech` / `casual` để cân bằng dataset.

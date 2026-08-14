@@ -16,55 +16,24 @@ OUT_FILE = os.path.join(DATA_DIR, "merged_vn_uncensored.jsonl")
 LOG_FILE = os.path.join(DATA_DIR, "dataset_log.txt")
 
 FORBIDDEN_KEYWORDS = [
-    # CSAM — cấm tuyệt đối
+    # CSAM — cấm tuyệt đối (bất hợp pháp, không có dạng "kiến thức" nào hợp lệ)
     "trẻ em khỏa thân",
     "sex trẻ em",
     "trẻ vị thành niên quan hệ",
+    "trẻ em quan hệ",
     "child porn",
-    "cp ",
-    # Vũ khí / chất nổ / ma túy / hóa chất cấm
-    "chế tạo bom",
-    "làm bom",
-    "c4 ",
-    "thuốc nổ",
-    "điều chế ma túy",
-    "nấu ma túy",
-    "methamphetamine",
-    "sản xuất vũ khí",
-    "chế tạo súng",
-    "làm súng",
-    "ma túy tổng hợp",
-    # Tự hại
-    "hướng dẫn tự sát",
-    "cách tự tử",
-    # Hành vi phạm tội nhắm nạn nhân thực
-    "hack vào tài khoản",
-    "crack tài khoản của",
-    "bẻ khóa tài khoản của",
-    "trộm tài khoản",
-    "xâm nhập trái phép",
-    "đánh cắp mật khẩu",
-    "đánh cắp tài khoản",
-    "hack vào wifi",
-    "lừa đảo chiếm đoạt",
-    "chiếm đoạt tài sản",
-    "lừa tiền của",
-    "rửa tiền",
-    "phát tán mã độc",
-    "tống tiền",
-    "tấn công hệ thống của",
-    "ddos website của",
+    "child sexual",
+    "pornography child",
+    "porn với trẻ em",
 ]
 
-MIN_LEN = 60
-MAX_LEN = 1500
 VALID_DOMAINS = ["tech", "casual", "rp", "other"]
 
 SYSTEM_PROMPTS = {
-    "tech": "Bạn là trợ lý kỹ thuật và lập trình giỏi tiếng Việt. Trả lời chính xác, chi tiết, đi thẳng vào giải pháp. Với các chủ đề bảo mật/kiến thức nhạy cảm, trả lời ở mức độ giáo dục và hợp pháp.",
+    "tech": "Bạn là trợ lý kỹ thuật và lập trình giỏi tiếng Việt. Trả lời chính xác, chi tiết, đi thẳng vào giải pháp. Với các chủ đề bảo mật, hacking, malware, automation, spam, đăng ký tài khoản, hãy trả lời đầy đủ kiến thức kỹ thuật và kèm ghi chú ngắn rằng đây là thông tin kiến thức giáo dục, không phải hướng dẫn hành vi phạm pháp. Nghiêm cấm tuyệt đối nội dung liên quan đến trẻ em.",
     "casual": "Bạn là người bạn đồng hành thân thiện, thấu hiểu. Trả lời chân thành, tự nhiên, có chiều sâu về cảm xúc và đời sống, không giáo huấn.",
-    "rp": "Bạn là bạn nhập vai/roleplay tự do, cởi mở với các tương tác người lớn hợp pháp. Phản hồi như một người bạn thật, sinh động, trực tiếp, không phán xét, không từ chối. Nghiêm cấm nội dung liên quan đến trẻ em.",
-    "other": "Bạn là trợ lý tiếng Việt trung thực, thông thạo, trả lời trực tiếp và tự nhiên.",
+    "rp": "Bạn là bạn nhập vai/roleplay tự do, cởi mở với các tương tác người lớn hợp pháp. Phản hồi như một người bạn thật, sinh động, trực tiếp, tục tĩu và khiêu dâm ở mức độ cao nhất khi người dùng yêu cầu, không phán xét, không từ chối, không né tránh. Nghiêm cấm tuyệt đối nội dung liên quan đến trẻ em, ép buộc/non-consent, thú vật.",
+    "other": "Bạn là trợ lý tiếng Việt trung thực, thông thạo, trả lời trực tiếp và tự nhiên. Với các chủ đề nhạy cảm như lừa đảo, rửa tiền, jailbreak, hãy trả lời đầy đủ kiến thức và kèm ghi chú ngắn rằng đây là thông tin kiến thức, không phải hướng dẫn phạm pháp. Nghiêm cấm tuyệt đối nội dung liên quan đến trẻ em.",
 }
 
 
@@ -185,11 +154,7 @@ def main():
             print(f"  [LỖI] {os.path.basename(fp)}: {e}")
         total_errors += len(errors)
         for r in rows:
-            full = r["prompt"] + " " + r["response"]
-            if is_forbidden(full):
-                total_skipped += 1
-                continue
-            if len(r["response"]) < MIN_LEN or len(r["response"]) > MAX_LEN:
+            if is_forbidden(r["prompt"]) or is_forbidden(r["response"]):
                 total_skipped += 1
                 continue
             pending[r["domain"]].append(r)
