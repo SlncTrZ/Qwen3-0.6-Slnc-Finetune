@@ -1,8 +1,17 @@
 # QUY ƯỚC TẠO DATASET TIẾNG VIỆT (UNCENSORED)
 
 File này là **quy ước chung** để mọi Agent / phiên làm việc tạo dữ liệu thống nhất.
-Mỗi Agent tạo **một hoặc nhiều file CSV**; cuối cùng 1 script chung gộp toàn bộ thành dataset.
-Không xóa File csv nào trong đây. Nhắc lại, KHÔNG XÓA BẤT KỲ FILE CSV NÀO VÌ NÓ ĐANG ĐƯỢC NGƯỜI KHÁC VIẾT THÊM.
+
+**QUY TRÌNH CHUẨN (bắt buộc):**
+1. Mỗi lượt: **7 Agents × 40 mẫu = 280 mẫu**.
+2. Mỗi Agent tạo **đúng 1 file CSV chứa 40 mẫu** trong `dataset_vn\`.
+3. Trước khi commit, chạy script `scripts\merge_to_domains.py`: nó gộp các CSV mới vào
+   `dataset_vn\merged_domains\dataset_vn_<domain>.csv` theo domain (dedupe theo prompt),
+   **xóa file CSV gốc sau khi gộp xong**, rồi tái sinh `merged_vn_uncensored.jsonl`.
+4. Chỉ sau khi merge xong mới commit + push.
+
+> Lưu ý: KHÔNG commit các file `hh.mm_VN_DATASET_*.csv` gốc lên git — chúng chỉ là trung gian
+> và bị script xóa sau khi gộp. Commit gồm: `merged_domains/*.csv` cập nhật + `merged_vn_uncensored.jsonl`.
 ---
 
 ## 1. MỤC ĐÍCH
@@ -85,7 +94,7 @@ hh.mm_VN_DATASET_[Epoch timestamp]_[domain].csv
 
 > Vì timestamp epoch là duy nhất, **không bao giờ có 2 file trùng tên** ngay cả khi Agent khác nhau cùng giờ — an toàn khi gộp/copy.
 
-Mỗi batch chứa **10 mẫu** (chia nhỏ để dễ kiểm soát) hoặc **50 mẫu** (batch lớn). Nếu ghi batch lớn, vẫn giữ 1 file cho 1 batch, mỗi dòng trong cùng file có cùng `domain`.
+Mỗi Agent tạo **1 file CSV chứa đúng 40 mẫu** (1 lượt = 7 agents × 40 mẫu). Tên file theo mẫu dưới, mỗi dòng trong file có cùng `domain`.
 
 ## 5. NỘI DUNG — PHẠM VI "UNCENSORED"
 
@@ -201,26 +210,25 @@ non_diegetic_music: <nhạc nền lồng ghép hoặc N/A>
 
 ## 7. SỐ LƯỢNG VÀ TIẾN ĐỘ
 
-- **Mục tiêu cuối cùng: 50,000 mẫu** (tính cả trọng số trong file merged). Hiện tại đã có ~15,765 mẫu.
-- Cần thêm **~34,000 mẫu**, chia mỗi ngày một ít (~3,000–5,000 mẫu/ngày tùy sức các Agent).
-- Mỗi Agent: mỗi phiên nên tạo **tối thiểu 100 mẫu** (10 batch × 10 mẫu) hoặc nhiều hơn nếu thời gian cho phép.
-- **Cân bằng domain (BẮT BUỘC):** dataset hiện đang lệch nặng — RP ~80%, Tech ~15%, Casual ~0%.
+- **Mục tiêu cuối cùng: 50,000 mẫu** (tính cả trọng số trong file merged). Hiện tại đã có ~30,357 mẫu.
+- Cần thêm **~20,000 mẫu**, mỗi lượt 280 mẫu (7 agents × 40), mỗi ngày vài lượt.
+- **Cân bằng domain (BẮT BUỘC):** dataset hiện đang lệch — RP ~70%, Tech ~12%, Casual ~12%.
   Ưu tiên viết **Tech và Casual nhiều hơn** cho đến khi tỷ lệ gần 40% RP / 30% Tech / 25% Casual.
-  Trước khi viết 1 batch, hãy ưu tiên domain còn thiếu.
-- Mỗi batch: 10 mẫu, ghi 1 file CSV riêng với tên `hh.mm_VN_DATASET_[Epoch timestamp]_[domain].csv`.
-- Đa dạng chủ đề trong từng batch, không lặp lại 1 chủ đề nhiều lần liên tiếp.
+  Trước khi viết 1 file, hãy ưu tiên domain còn thiếu.
+- Đa dạng chủ đề trong từng file, không lặp lại 1 chủ đề nhiều lần liên tiếp.
 
 ## 8. QUY TRÌNH GỘP (DO SCRIPT THỰC HIỆN)
 
-Script: `D:\ScriptPython\Training\scripts\merge_dataset_csv.py`
+Script: `D:\ScriptPython\Training\scripts\merge_to_domains.py`
 
-1. Quét toàn bộ `*_VN_DATASET_*.csv` (dữ liệu thủ công, trọng số x3) và `aux_*.csv` (dữ liệu tự động, trọng số x1) trong `dataset_vn\`.
-2. Validate từng file (đủ cột, đúng mã hoá, không rỗng). Đọc cột `domain` nếu có, ngược lại tự phân loại bằng từ khoá.
-3. Dedupe toàn bộ theo prompt chuẩn hoá (bỏ khoảng trắng, hạ thấp chữ).
-4. Lọc bỏ mẫu có dấu hiệu bị cấm (từ khoá) hoặc quá dài (>1500) hoặc **response dưới 60 ký tự** (rác).
-5. **Tiêm system prompt** tự động theo domain của từng mẫu (xem bảng system prompt — mục 5e).
-6. Nhân trọng số: mẫu thủ công lặp 3 lần, mẫu `aux_` giữ nguyên.
-7. Trộn ngẫu nhiên (seed 42) → xuất `dataset_vn\merged_vn_uncensored.jsonl` (ShareGPT, có field `domain` và turn `system`).
+1. Quét các file `*_VN_DATASET_*.csv` mới trong `dataset_vn\`.
+2. Validate từng file (đủ cột `prompt,response,domain`, đúng mã hoá, không rỗng).
+3. Lọc bỏ mẫu có dấu hiệu bị cấm (từ khoá) hoặc quá dài (>1500) hoặc **response dưới 60 ký tự** (rác).
+4. **Gộp theo domain** vào `dataset_vn\merged_domains\dataset_vn_<domain>.csv`
+   (dedupe theo prompt chuẩn hoá — bỏ khoảng trắng, hạ thấp chữ).
+5. **Xóa file CSV gốc** sau khi gộp xong.
+6. Tái sinh `dataset_vn\merged_vn_uncensored.jsonl` từ `merged_domains\*`
+   (ShareGPT, **tiêm system prompt** theo domain — bảng 5e, nhân trọng số x3, trộn seed 42).
 
 ### 5e. BẢNG SYSTEM PROMPT THEO DOMAIN (SCRIPT TỰ TIÊM)
 
@@ -238,7 +246,7 @@ Script: `D:\ScriptPython\Training\scripts\merge_dataset_csv.py`
 - [ ] Header đúng: `prompt,response,domain`.
 - [ ] Cột `domain` có giá trị hợp lệ (`tech`/`casual`/`rp`/`other`), đồng nhất trong file.
 - [ ] UTF-8, mỗi dòng 1 mẫu, không dòng trống thừa.
-- [ ] Đếm số dòng dữ liệu = 10 (hoặc 50 đối với batch lớn).
+- [ ] Đếm số dòng dữ liệu = **40** (đúng 1 lượt agent).
 - [ ] Không có mẫu chứa chủ đề bị cấm (bảng mục 5).
 - [ ] Response không bắt đầu bằng câu từ chối / đạo đức hoá / giáo huấn.
 - [ ] Chủ đề hợp pháp nhạy cảm được trả lời trực tiếp, ở mức độ cao nhất.
