@@ -1,3 +1,3 @@
 added=280 skipped=0 errors=0
-unique=11013 weighted=33039
-domain={"rp": 23187, "other": 1272, "tech": 4698, "casual": 3882}
+unique=11293 weighted=33879
+domain={"tech": 5058, "casual": 4242, "rp": 23307, "other": 1272}
