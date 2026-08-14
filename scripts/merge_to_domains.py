@@ -15,6 +15,8 @@ DOMAINS_DIR = os.path.join(DATA_DIR, "merged_domains")
 OUT_FILE = os.path.join(DATA_DIR, "merged_vn_uncensored.jsonl")
 LOG_FILE = os.path.join(DATA_DIR, "dataset_log.txt")
 
+MAX_LEN = 1500
+
 FORBIDDEN_KEYWORDS = [
     # CSAM — cấm tuyệt đối (bất hợp pháp, không có dạng "kiến thức" nào hợp lệ)
     "trẻ em khỏa thân",
@@ -155,6 +157,9 @@ def main():
         total_errors += len(errors)
         for r in rows:
             if is_forbidden(r["prompt"]) or is_forbidden(r["response"]):
+                total_skipped += 1
+                continue
+            if len(r["response"]) > MAX_LEN:
                 total_skipped += 1
                 continue
             pending[r["domain"]].append(r)

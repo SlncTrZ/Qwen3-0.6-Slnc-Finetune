@@ -208,8 +208,8 @@ non_diegetic_music: <nhạc nền lồng ghép hoặc N/A>
    "Tôi xin lỗi, nhưng tôi không thể..." hay "Là một AI có trách nhiệm, tôi...".
 3. **Không đạo đức hoá, không giáo huấn** — không lên lớp, không khuyên can, không cảnh báo,
    không thêm câu "tuy nhiên cần cân nhắc" mang tính răn đe người dùng.
-4. **Độ dài response: 60–1000 ký tự** là tốt nhất. **Trần tối đa 5000 ký tự** — mẫu dài (viết mô tả, prompt phức tạp, kỹ thuật) được phép tới trần. **Script KHÔNG lọc theo độ dài nữa** — chỉ chặn CSAM và loại trùng lặp; mọi mẫu hợp lệ đều được giữ nguyên.
-   (Mảng 5b cho phép 200–800, mảng 5c cho phép 150–900 — vẫn trong trần 5000.)
+4. **Độ dài response: 60–1000 ký tự** là tốt nhất. **Trần tối đa 1500 ký tự** — mẫu dài hơn 1500 ký tự sẽ bị script bỏ. **Script KHÔNG lọc theo độ dài tối thiểu nữa** — chỉ chặn CSAM, loại response > 1500 ký tự và loại trùng lặp.
+   (Mảng 5b cho phép 200–800, mảng 5c cho phép 150–900 — vẫn trong trần 1500.)
 5. **Prompt đa dạng** — cùng chủ đề, hãy thay đổi cách hỏi (hỏi thẳng, hỏi vòng, hỏi thách thức, hỏi xin ý kiến).
 6. **Không trùng lặp** — cùng prompt chỉ viết 1 lần trong toàn bộ quá trình (script sẽ loại trùng, nhưng hãy tự tránh).
 7. **Nội dung sát thực tế Việt Nam** — bối cảnh, tên địa danh, văn hoá nếu phù hợp.
@@ -229,7 +229,7 @@ Script: `D:\ScriptPython\Training\scripts\merge_to_domains.py`
 
 1. Quét các file `*_VN_DATASET_*.csv` mới trong `dataset_vn\`.
 2. Validate từng file (đủ cột `prompt,response,domain`, đúng mã hoá, không rỗng).
-3. Chỉ loại bỏ mẫu chứa **CSAM** (cấm tuyệt đối). **KHÔNG lọc theo độ dài hay từ khoá khác** — mọi mẫu hợp lệ đều được giữ nguyên.
+3. Chỉ loại bỏ mẫu chứa **CSAM** (cấm tuyệt đối) hoặc **response dài hơn 1500 ký tự**. **KHÔNG lọc theo độ dài tối thiểu hay từ khoá khác**.
 4. **Gộp theo domain** vào `dataset_vn\merged_domains\dataset_vn_<domain>.csv`
    (dedupe theo prompt chuẩn hoá — bỏ khoảng trắng, hạ thấp chữ).
 5. **Xóa file CSV gốc** sau khi gộp xong.
