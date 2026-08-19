@@ -6,7 +6,7 @@ title Fine-tune QLoRA - Interactive
 set "ROOT=D:\ScriptPython\Training"
 set "SCRIPTS=%ROOT%\scripts"
 set "PY=%ROOT%\.unsloth-env\Scripts\python.exe"
-set "DATASET=%ROOT%\dataset_vn\merged_vn_uncensored.jsonl"
+set "DATASET=%ROOT%\dataset_vn\merged_vn_uncensored_*.jsonl"
 
 if not exist "%PY%" (
     echo [LOI] Khong tim thay python trong .unsloth-env: %PY%

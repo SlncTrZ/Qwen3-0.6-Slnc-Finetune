@@ -1,2 +1,2 @@
 unique=21127 weighted=63381
-domain={"other": 3942, "tech": 18120, "rp": 26547, "casual": 14772}
+domain={"tech": 18120, "casual": 14772, "rp": 26547, "other": 3942}

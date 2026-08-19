@@ -11,8 +11,8 @@ parser.add_argument("--steps", type=int, default=500,
                     help="Số bước train max_steps (vd 200 / 500 / 5000)")
 parser.add_argument("--epochs", type=float, default=None,
                     help="Số epoch num_train_epochs (ưu tiên hơn --steps, vd 1 / 2)")
-parser.add_argument("--dataset", default="D:/ScriptPython/Training/dataset_vn/merged_vn_uncensored.jsonl",
-                    help="File dataset jsonl (mặc định: merged_vn_uncensored.jsonl)")
+parser.add_argument("--dataset", default="D:/ScriptPython/Training/dataset_vn/merged_vn_uncensored_*.jsonl",
+                    help="Dataset jsonl (glob pattern, mặc định: merged_vn_uncensored_*.jsonl — tự gộp các file per-domain)")
 parser.add_argument("--output", default="D:/ScriptPython/Training/output_lora",
                     help="Thư mục output LoRA + merged")
 args = parser.parse_args()
@@ -43,6 +43,7 @@ from unsloth import FastLanguageModel
 from unsloth import is_bfloat16_supported
 from datasets import load_dataset
 from trl import SFTTrainer, SFTConfig
+import glob
 
 model, tokenizer = FastLanguageModel.from_pretrained(
     model_name=MODEL_PATH,
@@ -64,7 +65,15 @@ model = FastLanguageModel.get_peft_model(
     loftq_config=None,
 )
 
-dataset = load_dataset("json", data_files=DATASET_FILE, split="train")
+dataset_files = sorted(glob.glob(DATASET_FILE)) if any(c in DATASET_FILE for c in "*?[") else [DATASET_FILE]
+if not dataset_files:
+    print("[LOI] Khong tim thay dataset nao khop:", DATASET_FILE)
+    sys.exit(1)
+print("Dataset files:", len(dataset_files))
+for fp in dataset_files:
+    print("  -", fp)
+
+dataset = load_dataset("json", data_files=dataset_files, split="train")
 print("Total samples:", len(dataset))
 
 def format_chat(examples):

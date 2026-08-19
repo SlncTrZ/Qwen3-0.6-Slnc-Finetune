@@ -12,7 +12,7 @@ if hasattr(sys.stdout, "reconfigure"):
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(ROOT, "dataset_vn")
 DOMAINS_DIR = os.path.join(DATA_DIR, "merged_domains")
-OUT_FILE = os.path.join(DATA_DIR, "merged_vn_uncensored.jsonl")
+OUT_PATTERN = "merged_vn_uncensored_{domain}.jsonl"
 LOG_FILE = os.path.join(DATA_DIR, "dataset_log.txt")
 
 MAX_LEN = 1500
@@ -99,7 +99,7 @@ def write_csv(domain, rows):
 
 
 def regenerate_jsonl():
-    """Tái sinh merged jsonl từ merged_domains/*.csv với system prompt + trọng số x3."""
+    """Tái sinh các file JSONL per-domain từ merged_domains/*.csv (trọng số x3)."""
     all_rows = []  # list of (domain, prompt, response)
     for domain in VALID_DOMAINS:
         for r in load_existing(domain):
@@ -112,33 +112,53 @@ def regenerate_jsonl():
         if h not in best:
             best[h] = (domain, p, r)
 
-    final = []
+    # gom theo domain rồi nhân trọng số x3, shuffle riêng từng domain (seed 42)
+    by_domain = {d: [] for d in VALID_DOMAINS}
     for domain, p, r in best.values():
-        final.extend([(domain, p, r)] * 3)  # trọng số x3
+        by_domain[domain].extend([(domain, p, r)] * 3)
 
     random.seed(42)
-    random.shuffle(final)
+    for d in VALID_DOMAINS:
+        random.shuffle(by_domain[d])
 
     domain_counts = {}
-    for d, _, _ in final:
-        domain_counts[d] = domain_counts.get(d, 0) + 1
+    for d in VALID_DOMAINS:
+        rows = by_domain[d]
+        domain_counts[d] = len(rows)
+        if not rows:
+            continue
+        fp = os.path.join(DATA_DIR, OUT_PATTERN.format(domain=d))
+        with open(fp, "w", encoding="utf-8") as f:
+            for dd, p, r in rows:
+                conv = [
+                    {"from": "system", "value": SYSTEM_PROMPTS[dd]},
+                    {"from": "human", "value": p},
+                    {"from": "gpt", "value": r},
+                ]
+                f.write(json.dumps(
+                    {"conversations": conv, "domain": dd},
+                    ensure_ascii=False,
+                ) + "\n")
+        print(f"  Ghi {os.path.basename(fp)}: {len(rows)} dòng")
 
-    with open(OUT_FILE, "w", encoding="utf-8") as f:
-        for d, p, r in final:
-            conv = [
-                {"from": "system", "value": SYSTEM_PROMPTS[d]},
-                {"from": "human", "value": p},
-                {"from": "gpt", "value": r},
-            ]
-            f.write(json.dumps(
-                {"conversations": conv, "domain": d},
-                ensure_ascii=False,
-            ) + "\n")
-
-    return len(best), len(final), domain_counts
+    weighted = sum(domain_counts.values())
+    return len(best), weighted, domain_counts
 
 
 def main():
+    if "--regenerate" in sys.argv:
+        unique, weighted, domain_counts = regenerate_jsonl()
+        print("\nPhân bố domain (sau nhân trọng số x3):")
+        for d in VALID_DOMAINS:
+            n = domain_counts.get(d, 0)
+            pct = n / weighted * 100 if weighted else 0
+            print(f"  {d:8s}: {n:6d}  ({pct:4.1f}%)")
+        print(f"\nJSONL: {unique} unique | {weighted} dòng (per-domain)")
+        with open(LOG_FILE, "w", encoding="utf-8") as f:
+            f.write(f"unique={unique} weighted={weighted}\n")
+            f.write("domain=" + json.dumps(domain_counts, ensure_ascii=False) + "\n")
+        return
+
     new_files = sorted(glob.glob(os.path.join(DATA_DIR, "*_VN_DATASET_*.csv")))
     if not new_files:
         print("Không có file CSV mới nào để gộp.")

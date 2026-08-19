@@ -7,7 +7,7 @@ set "ROOT=D:\ScriptPython\Training"
 set "SCRIPTS=%ROOT%\scripts"
 set "PY=%ROOT%\.unsloth-env\Scripts\python.exe"
 set "MODEL=%ROOT%\models\Qwen3-0.6B"
-set "DATASET=%ROOT%\dataset_vn\merged_vn_uncensored.jsonl"
+set "DATASET=%ROOT%\dataset_vn\merged_vn_uncensored_*.jsonl"
 set "OUT=%ROOT%\output_lora"
 set "LOG=%ROOT%\train_log.txt"
 
